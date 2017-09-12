@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3
 # Program: IpCalc
 # Author: Timothy Pulliam
 # Date: 9/11/2017
@@ -10,7 +11,6 @@ IS_IPV4 = True
 IS_IPV6 = False
 IPV4_IS_BINARY = True
 IPV4_IS_DECIMAL = False
-
 # ANSI Text Color Codes
 G = '\033[32m'
 B = '\033[30m'
@@ -33,6 +33,8 @@ def ipcalc(argv):
         print(d2b(argv[2]))
     if command == 'ipv4_to_class':
         ipv4_to_class(argv[2])
+    else:
+        print("Invalid Command: Use 'ipcalc help' for usage.")
 
 def parse_ip(ip):
     """Determine whehter the given IP address is in a valid
@@ -40,8 +42,9 @@ def parse_ip(ip):
     global IPV4_IS_DECIMAL
     global IPV4_IS_BINARY
 
-    ipv4_decimal_pattern = re.compile(r'(\d{1,3}\.){3}\d{1,3}')
-    ipv4_binary_pattern = re.compile(r'([01]{8}\.){3}[01]{8}')
+    # http://www.regular-expressions.info/ip.html
+    ipv4_decimal_pattern = re.compile(r'\b(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b')
+    ipv4_binary_pattern = re.compile(r'\b([01]{8}\.){3}[01]{8}\b')
     if re.fullmatch(ipv4_decimal_pattern, ip):
         IPV4_IS_DECIMAL = True
         IPV4_IS_BINARY = False
