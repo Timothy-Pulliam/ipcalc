@@ -3,9 +3,13 @@
 # Date: 9/11/2017
 
 from sys import argv
+import re
 
 # GLOBAL VARIABLES
-IPV4_IS_BINARY = False
+IS_IPV4 = True
+IS_IPV6 = False
+IPV4_IS_BINARY = True
+IPV4_IS_DECIMAL = False
 
 # ANSI Text Color Codes
 G = '\033[32m'
@@ -30,6 +34,22 @@ def ipcalc(argv):
     if command == 'ipv4_to_class':
         ipv4_to_class(argv[2])
 
+def parse_ip(ip):
+    """Determine whehter the given IP address is in a valid
+    decimal or binary format."""
+    global IPV4_IS_DECIMAL
+    global IPV4_IS_BINARY
+
+    ipv4_decimal_pattern = re.compile(r'(\d{1,3}\.){3}\d{1,3}')
+    ipv4_binary_pattern = re.compile(r'([01]{8}\.){3}[01]{8}')
+    if re.fullmatch(ipv4_decimal_pattern, ip):
+        IPV4_IS_DECIMAL = True
+        IPV4_IS_BINARY = False
+    elif re.fullmatch(ipv4_binary_pattern, ip):
+        IPV4_IS_DECIMAL = False
+        IPV4_IS_BINARY = True
+    else:
+        print("Invalid IPv4 Address Format")
 
 
 
