@@ -42,12 +42,36 @@ def ipcalc(argv):
 
 def ip_info(ip):
     if is_ip(ip):
-        print("Decimal Notation: " + ip_decimal(ip))
-        print("Binary Notation: " + ip_binary(ip))
+        print("Address:\t" + ip_decimal(ip) + "\t" + ip_binary(ip))
+        print("Netmask:\t" + netmask(ip) + "\t" + ip_binary(netmask(ip)))
         print("Class: " + ipv4_to_class(ip))
-        print("Netmask: ")    
+        if is_private(ip):
+            print(G + "Private Internet" + B)
 
 
+
+def netmask(ip):
+    if ipv4_to_class(ip) == 'A':
+        return '255.0.0.0'
+    elif ipv4_to_class(ip) == 'B':
+        return '255.255.0.0'
+    elif ipv4_to_class(ip) == 'C':
+        return '255.255.255.0'
+    else:
+        return 'Classless'
+
+def is_private(ip):
+    class_a_pattern = re.compile(r'10\.((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){2}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])')
+    class_b_pattern = re.compile(r'172\.(1[6-9]|2[0-9]|3[01])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])')
+    class_c_pattern = re.compile(r'192\.168\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])')
+    if re.fullmatch(class_a_pattern, ip):
+        return True
+    elif re.fullmatch(class_b_pattern, ip):
+        return True
+    elif re.fullmatch(class_c_pattern, ip):
+        return True
+    else:
+        return False
 
 def ip_decimal(ip):
     """Return IP address in decimal form"""
