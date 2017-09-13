@@ -24,56 +24,49 @@ def ipcalc(argv):
         print_usage()
         return 0
 
+    # Parse commands
+    command = argv[1]
 
     if is_ip(argv[1]):
         ip = argv[1]
-        print("Decimal Notation: " + ipv)
-
-    if command == 'b2d':
+        ip_info(ip)
+    elif command == 'b2d':
         print(b2d(argv[2]))
-    if command == 'd2b':
+    elif command == 'd2b':
         print(d2b(argv[2]))
-    if command == 'ipv4_to_class':
+    elif command == 'ipv4_to_class':
         ipv4_to_class(argv[2])
     else:
         print("Invalid Command: Use 'ipcalc help' for usage.")
 
 
 def ip_info(ip):
-    print("Decimal Notation: " + ip_decimal(ip))
-    print("Binary Notation: " + ip_binary(ip))
-    print("Class: " + ipv4_to_class(ip))
-    print("Netmask: ")    
+    if is_ip(ip):
+        print("Decimal Notation: " + ip_decimal(ip))
+        print("Binary Notation: " + ip_binary(ip))
+        print("Class: " + ipv4_to_class(ip))
+        print("Netmask: ")    
 
-def ip_d2b(ip):
-    """Convert IP address from decimal form to unsigned binary form"""
-    if is_ip(ip) and IPV4_IS_DECIMAL:
-        ip_binary = '.'.join([d2b(octet) for octet in ip.split('.')])
-        return ip_binary
-    else:
-        print("Not a valid IP address")
-        return 1
+
 
 def ip_decimal(ip):
     """Return IP address in decimal form"""
-    if is_ip(ip):
-        if IPV4_IS_DECIMAL:
-            return ip
-        else:
-            # Must be in binary form
-            ip_decimal = '.'.join([b2d(octet) for octet in ip.split('.')])
+    if IPV4_IS_DECIMAL:
+        return ip
     else:
-        print("Not a valid IP Address")
+        # Must be in binary form
+        ip_decimal = '.'.join([b2d(octet) for octet in ip.split('.')])
+        return ip_decimal
+
 
 def ip_binary(ip):
     """Return IP address in decimal form"""
-    if is_ip(ip):
-        if IPV4_IS_BINARY:
-            return ip
-        else:
-            # Must be in decimal form
-            ip_decimal = '.'.join([d2b(octet) for octet in ip.split('.')])
-
+    if IPV4_IS_BINARY:
+        return ip
+    else:
+        # Must be in decimal form
+        ip_decimal = '.'.join([d2b(octet) for octet in ip.split('.')])
+        return ip_decimal
 
 
 def is_ip(ip):
@@ -108,27 +101,6 @@ def d2b(decimal_string):
     return '{:0>8b}'.format(decimal_int)
 
 
-def ip_d2b(ip):
-    """Convert IP address from decimal form to unsigned binary form"""
-    if is_ip(ip) and IPV4_IS_DECIMAL:
-        ip_binary = '.'.join([d2b(octet) for octet in ip.split('.')])
-        return ip_binary
-    else:
-        print("Not a valid IP address")
-        return 1
-
-
-
-def ip_b2d(ip):
-    """Convert IP address from unsigned binary form to decimal form"""
-    if is_ip(ip) and IPV4_IS_BINARY:
-        ip_decimal = '.'.join([b2d(octet) for octet in ip.split('.')])
-        return ip_decimal
-    else:
-        print("Not a valid IP address")
-        return 1
-
-
 def ipv4_to_class(ipv4):
     """"
     Given an IP address (<str ipv4>) of the form xxxxxxxx.xxxxxxxx.xxxxxxxx.xxxxxxxx
@@ -144,27 +116,27 @@ def ipv4_to_class(ipv4):
     octets = ipv4.split('.')
     if IPV4_IS_BINARY:
         if 0 <= b2d(octets[0]) < 127:
-            print("A")
+            return "A"
         elif 128 <= b2d(octets[0]) <= 191:
-            print("B")
+            return "B"
         elif 192 <= b2d(octets[0]) <= 223:
-            print("C")
+            return "C"
         elif 224 <= b2d(octets[0]) <= 239:
-            print("D (Multicast)")
+            return "D (Multicast)"
         else:
             print("E (Experimental)")
-    else:
+    elif IPV4_IS_DECIMAL:
         leading_octet = int(octets[0])
         if 0 <= leading_octet < 127:
-            print("A")
+            return "A"
         elif 128 <= leading_octet <= 191:
-            print("B")
+            return "B"
         elif 192 <= leading_octet <= 223:
-            print("C")
+            return "C"
         elif 224 <= leading_octet <= 239:
-            print("D (Multicast)")
+            return "D (Multicast)"
         else:
-            print("E (Experimental)")
+            return "E (Experimental)"
 
 
 def print_usage():
