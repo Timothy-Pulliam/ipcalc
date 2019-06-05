@@ -26,10 +26,17 @@ def ipcalc(argv):
 
     # Parse commands
     command = argv[1]
-
-    if is_ip(argv[1]):
+ 
+    # Check if cidr block was provided
+    try:
+        ip, cidr = argv[1].split('/')
+    except ValueError as e:
+        print("Invalid/No cidr range provided")
         ip = argv[1]
-        ip_info(ip)
+        cidr = None 
+
+    if is_ip(ip):
+        ip_info(ip, cidr)
     elif command == 'b2d':
         print(b2d(argv[2]))
     elif command == 'd2b':
@@ -40,18 +47,23 @@ def ipcalc(argv):
         print("Invalid Command: Use 'ipcalc help' for usage.")
 
 
-def ip_info(ip):
+def ip_info(ip, cidr):
     if is_ip(ip):
+        mask = netmask(ip, cidr)
+    
         print("Address:\t" + ip_decimal(ip) + "\t" + ip_binary(ip))
-        print("Netmask:\t" + netmask(ip) + "\t" + ip_binary(netmask(ip)))
+        print("CIDR Block:\t", cidr)
+        print("Netmask:\t {}.{}.{}.{}".format(mask[0:8], mask[8:18], mask[18:24], mask[24:]) + "\t" + ip_binary(netmask(ip, cidr)))
         print("Class: " + ipv4_to_class(ip))
         if is_private(ip):
             print(G + "Private Internet" + B)
 
 
 
-def netmask(ip):
-    if ipv4_to_class(ip) == 'A':
+def netmask(ip, cidr=None):
+    if cidr:
+        return ip_binary(str((2**int(cidr) - 1)))  
+    elif ipv4_to_class(ip) == 'A':
         return '255.0.0.0'
     elif ipv4_to_class(ip) == 'B':
         return '255.255.0.0'
@@ -84,7 +96,7 @@ def ip_decimal(ip):
 
 
 def ip_binary(ip):
-    """Return IP address in decimal form"""
+    """Return IP address in binary form"""
     if IPV4_IS_BINARY:
         return ip
     else:
@@ -94,7 +106,7 @@ def ip_binary(ip):
 
 
 def is_ip(ip):
-    """Determine whehter the given IP address is in a valid
+    """Determine whether the given IP address is in a valid
     decimal or binary format."""
     global IPV4_IS_DECIMAL
     global IPV4_IS_BINARY
@@ -116,7 +128,7 @@ def is_ip(ip):
 
 def b2d(binary_string):
     """Convert a number in unsigned binary form to decimal form"""
-    return int(binary_string, 2)
+    return '{:0>8b}'.format(str(int(binary_string, 2)))
 
 
 def d2b(decimal_string):
